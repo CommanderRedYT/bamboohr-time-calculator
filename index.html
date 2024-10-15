@@ -3,8 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Bamboohr Time Calculator</title>
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <h1>Bamboohr Time Calculator</h1>
+    <!-- Bamboohr wants time in form of hours with decimal points. 1 hour 30 minutes = 1.5 hours. Create a input field with hours and minutes and a button to calculate the total time in hours. Do it all in javascript. -->
+    <form id="timeForm">
+        <label for="hours">Hours:</label>
+        <input type="number" id="hours" name="hours" min="0" step="1" required>
+        <label for="minutes">Minutes:</label>
+        <input type="number" id="minutes" name="minutes" min="0" max="59" step="1" required>
+        <button type="submit">Calculate</button>
+    </form>
+    <p id="result"></p>
+    <button id="copy-button" class="hide">Copy result to clipboard</button>
+    <script>
+        const result = document.getElementById('result');
+        const copyButton = document.getElementById('copy-button');
 
+        document.getElementById('timeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const hours = parseFloat(document.getElementById('hours').value);
+            const minutes = parseFloat(document.getElementById('minutes').value);
+            const totalHours = hours + (minutes / 60);
+            const totalHoursRounded = Math.round(totalHours * 100) / 100;
+            result.textContent = 'Total time: ' + totalHoursRounded + ` hour${totalHoursRounded !== 1 ? 's' : ''}`;
+            result.dataset.hours = totalHoursRounded.toString().replace('.', ',');
+
+            if (navigator.clipboard) {
+                copyButton.classList.remove('hide');
+            }
+        });
+
+        // unhide copy button if clipboard API is available
+        if (navigator.clipboard) {
+            copyButton.addEventListener('click', function() {
+                if (!result.dataset.hours) {
+                    return;
+                }
+
+                navigator.clipboard.writeText(result.dataset.hours)
+                    .then(() => {
+                        alert('Copied to clipboard');
+                    })
+                    .catch(() => {
+                        alert('Failed to copy to clipboard');
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
